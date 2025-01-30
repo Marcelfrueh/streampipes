@@ -8,10 +8,21 @@
       "sourceRoot": "src",
       "projectType": "application",
       "prefix": "sp",
+      "i18n": {
+        "sourceLocale": "en-US",
+        "locales": {
+          "de": {
+            "translation": "src/locale/messages.de.json"
+          }
+        }
+      },
       "architect": {
         "build": {
           "builder": "@angular-architects/native-federation:build",
-          "options": {},
+          "options": {
+            "localize": true,
+            "i18nMissingTranslation": "error"
+          },
           "configurations": {
             "production": {
               "target": "app:esbuild:production"
@@ -19,6 +30,9 @@
             "development": {
               "target": "app:esbuild:development",
               "dev": true
+            },
+            "de": {
+              "localize": ["de"]
             }
           },
           "defaultConfiguration": "production"
@@ -26,9 +40,14 @@
         "serve": {
           "builder": "@angular-architects/native-federation:build",
           "options": {
-            "target": "app:serve-original:development",
+            "target": "app:serve-original:development,en",
             "rebuildDelay": 0,
             "dev": true
+          },
+          "configurations": {
+            "de": {
+              "target": "app:serve-original:development,de"
+            }
           }
         },
         "esbuild": {
@@ -69,13 +88,20 @@
                   "maximumWarning": "6kb"
                 }
               ],
-              "outputHashing": "all"
+              "outputHashing": "all",
+              "localize": true
             },
             "development": {
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true,
               "namedChunks": true
+            },
+            "en": {
+              "localize": ["en-US"]
+            },
+            "de": {
+              "localize": ["de"]
             }
           },
           "defaultConfiguration": "production"
@@ -90,6 +116,12 @@
               "buildTarget": "app:esbuild:development",
               "proxyConfig": "src/proxy.conf.json",
               "port": 8082
+            },
+            "en": {
+              "buildTarget": "app:esbuild:development,en"
+            },
+            "de": {
+              "buildTarget": "app:esbuild:development,de"
             }
           },
           "defaultConfiguration": "development"
@@ -97,7 +129,9 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "app:build"
+            "buildTarget": "app:esbuild",
+            "format": "json",
+            "outputPath": "src/locale"
           }
         },
         "test": {
